@@ -45,6 +45,77 @@ cubeMesh.position.x = 0;
 cubeMesh.position.z = 0;
 physicsManager.addCube(cubeMesh);
 
+function convertToHeightMatrix(geometry, resolution = 100) {
+    geometry.computeBoundingBox();
+    const { min, max } = geometry.boundingBox;
+    const width = max.x - min.x;
+    const depth = max.z - min.z;
+
+    const matrix = [];
+    for (let x = 0; x < resolution; x++) {
+        matrix[x] = [];
+        for (let z = 0; z < resolution; z++) {
+            // 샘플링 위치 계산
+            const sampleX = min.x + (x / (resolution - 1)) * width;
+            const sampleZ = min.z + (z / (resolution - 1)) * depth;
+
+            // 지오메트리에서 해당 위치에 가장 가까운 vertex의 Y값을 찾기
+            const closest = geometry.attributes.position.array;
+            let minDist = Infinity;
+            let height = 0;
+
+            for (let i = 0; i < closest.length; i += 3) {
+                const vx = closest[i];
+                const vy = closest[i + 1];
+                const vz = closest[i + 2];
+                const dist = Math.hypot(sampleX - vx, sampleZ - vz);
+                if (dist < minDist) {
+                    minDist = dist;
+                    height = vy;
+                }
+            }
+
+            matrix[x][z] = height;
+        }
+    }
+    return matrix;
+}
+
+async function loadTerrain(){
+    const fbxLoader = new FBXLoader();
+    let terrain = await new FBXLoader().loadAsync('./3DModels/LandscapeTest1.fbx');
+    let terrainMesh;
+    terrain.traverse((child) => {
+        if(child.isMesh){
+            terrainMesh = child;
+        }
+    })
+    scene.add(terrainMesh);
+    terrainMesh.rotateX(Math.PI/2);
+    terrainMesh.position.setY(1500);
+    //console.log(terrainMesh);
+
+    const testTexture = new THREE.TextureLoader().load('./textures/gray_rocks_diff.jpg');
+    testTexture.wrapS = THREE.RepeatWrapping;
+    testTexture.wrapT = THREE.RepeatWrapping;
+    testTexture.repeat.set(1, 1);
+    terrainMesh.material.map = testTexture;
+
+    const heightMatrix = convertToHeightMatrix(terrainMesh.geometry, 100);
+    const shape = new CANNON.Heightfield(heightMatrix, {
+        elementSize: 1
+    });
+    const body = new CANNON.Body({
+        mass: 0,
+        shape: shape
+    });
+
+    body.position.set(-heightMatrix.length / 2, 0, -heightMatrix[0].length / 2);
+    world.addBody(body);
+}
+loadTerrain();
+
+
 
 /*const fbxLoader = new FBXLoader()
 fbxLoader.load(

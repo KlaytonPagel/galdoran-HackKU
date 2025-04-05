@@ -157,7 +157,7 @@ export class PlayerCharacter{
     setupAnimations() {
         this.mixer = new THREE.AnimationMixer(this.mesh);
         const clips = this.mesh.animations;
-        console.log(clips)
+        //console.log(clips)
         this.states["walking"] = this.mixer.clipAction(THREE.AnimationClip.findByName(clips, "walking"));
         this.states["running"] = this.mixer.clipAction(THREE.AnimationClip.findByName(clips, "running"));
         this.states["idle"] = this.mixer.clipAction(THREE.AnimationClip.findByName(clips, "Armature|idle"));
