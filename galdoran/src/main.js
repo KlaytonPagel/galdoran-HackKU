@@ -41,6 +41,10 @@ const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx
 player.offset = new THREE.Vector3(1, 0, 5);
 //const player = new PhysicsCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager, renderer);
 
+// ------------------------------------------------------ Loading Screen
+const loadingScreen = document.getElementById("loading-screen");
+
+
 // ############################ THE TESTING ZONE #############################
 
 //const controls = new OrbitControls( player.camera, renderer.domElement );
@@ -165,5 +169,8 @@ function animate() {
 
 
     // ########################################################################
+    if (ground.length > 0 && loadingScreen.style.display != 'none') {
+        loadingScreen.style.display = 'none';
+    }
     renderer.render( scene, player.camera );
 }
