@@ -60,6 +60,7 @@ hdriLoader.load( 'hdri/GaldoranSky.hdr', function ( texture ) {
 
 //sky box test
 const sky = new SkyBox(scene)
+const cullable = []
 
 
 //terrain test
@@ -72,14 +73,18 @@ async function loadTerrain() {
         map: texture,
     });
     try {
-        const gltf = await new GLTFLoader().loadAsync('models/TreeTest2glb.glb');
+        const gltf = await new GLTFLoader().loadAsync('models/TreeTest.glb');
         const terrain = gltf.scene;
         terrain.children[0].traverse((child) => {
             if (child.isMesh) {
                 child.material = material;
             }
         });
-        console.log(terrain.children[0])
+        terrain.children[1].traverse((child) => {
+            if (child.isMesh) {
+                cullable.push(child);
+            }
+        });
         scene.add(terrain);
     } catch (error) {
         console.error("Error loading terrain:", error);
@@ -121,6 +126,17 @@ physicsManager.createPlane(scene);
 physicsManager.createCube(scene);
 
 // ###########################################################################
+function culling() {
+    for (let i = 0; i < cullable.length; i++) {
+        const pos = new THREE.Vector3()
+        cullable[i].getWorldPosition(pos)
+        if (player.mesh.position.distanceTo(pos) > 100) {
+            cullable[i].visible = false
+        } else {
+            cullable[i].visible = true
+        }
+    }
+}
 
 // -------------------------------------------------------- Animation Loop
 const clock = new THREE.Clock()
@@ -134,12 +150,13 @@ function animate() {
         player.update(delta);
     }
     physicsManager.update(delta);
+    sky.animate(delta);
+    culling();
 
     // ############################ The Tesing Animation Zone #################
 
 
 
-    sky.animate(delta);
     //player.update(delta);
 
 
