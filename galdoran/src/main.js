@@ -37,19 +37,15 @@ const light = new THREE.HemisphereLight( 0xffffff, 0xffffff, 2 );
 scene.add( light );
 
 // ------------------------------------------------------- Player
-//const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
-//player.offset = new THREE.Vector3(1, 0, 5);
-const player = new PhysicsCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
-
-// ------------------------------------------------------- build out the floor
-const ground = new Plane(0,0 , 0, 100, 100, -Math.PI/2, 0, 0, 0x555555, "textures/ground01.jpg");
-scene.add(ground.mesh);
+const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
+player.offset = new THREE.Vector3(1, 0, 5);
+//const player = new PhysicsCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager, renderer);
 
 // ############################ THE TESTING ZONE #############################
 
 //const controls = new OrbitControls( player.camera, renderer.domElement );
 
-// hdri test
+// hdri tes
 const pmremGenerator = new THREE.PMREMGenerator( renderer );
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
@@ -68,9 +64,22 @@ const sky = new SkyBox(scene)
 
 //terrain test
 async function loadTerrain() {
+    let texture = new THREE.TextureLoader().load('textures/T_GrassTerrain_01_01_C1.PNG');
+    texture.repeat = new THREE.Vector2(1, 1);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    let material = new THREE.MeshStandardMaterial({
+        map: texture,
+    });
     try {
-        const gltf = await new GLTFLoader().loadAsync('models/Terrain2.glb');
+        const gltf = await new GLTFLoader().loadAsync('models/TreeTest2glb.glb');
         const terrain = gltf.scene;
+        terrain.children[0].traverse((child) => {
+            if (child.isMesh) {
+                child.material = material;
+            }
+        });
+        console.log(terrain.children[0])
         scene.add(terrain);
     } catch (error) {
         console.error("Error loading terrain:", error);
@@ -118,12 +127,12 @@ const clock = new THREE.Clock()
 let delta
 function animate() {
     delta = Math.min(clock.getDelta(), 0.1)
-    /*if (player.mesh != undefined){
+    if (player.mesh != undefined){
         if (player.playerControls == undefined) {
             player.initialize(renderer.domElement);
         }
         player.update(delta);
-    }*/
+    }
     physicsManager.update(delta);
 
     // ############################ The Tesing Animation Zone #################
@@ -131,6 +140,7 @@ function animate() {
 
 
     sky.animate(delta);
+    //player.update(delta);
 
 
 
