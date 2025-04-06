@@ -33,8 +33,18 @@ async function initPhysics() {
 }
 
 // -------------------------------------------------------- Lights
-//const light = new THREE.HemisphereLight( 0xffffff, 0xffffff, 2 );
-//scene.add( light );
+const hemilight = new THREE.HemisphereLight( 0xffffff, 0xffffff, .3 );
+scene.add( hemilight );
+
+const amblight = new THREE.AmbientLight( 0x404040, 5 ); // soft white light
+scene.add( amblight );
+
+const light = new THREE.DirectionalLight( 0xFFFFFF );
+scene.add( light );
+light.position.set(new THREE.Vector3(0, 1, 0));
+
+const helper = new THREE.DirectionalLightHelper( light, 5 );
+scene.add( helper );
 
 // ------------------------------------------------------- Player
 const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-character.fbx", scene, physicsManager);
@@ -48,19 +58,6 @@ const loadingScreen = document.getElementById("loading-screen");
 // ############################ THE TESTING ZONE #############################
 
 //const controls = new OrbitControls( player.camera, renderer.domElement );
-
-// hdri tes
-const pmremGenerator = new THREE.PMREMGenerator( renderer );
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-const hdriLoader = new RGBELoader()
-hdriLoader.load( 'hdri/GaldoranSky.hdr', function ( texture ) {
-    scene.environment = texture;
-    texture.mapping = THREE.EquirectangularReflectionMapping;
-    scene.background = texture;
-} );
-
 
 //sky box test
 const sky = new SkyBox(scene)
