@@ -8,6 +8,8 @@ import { Tree01 } from './objects/Tree01';
 import { PhysicsManager } from'./utility/PhysicsManager'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true});
@@ -37,13 +39,24 @@ scene.add( light );
 //const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
 //player.offset = new THREE.Vector3(1, 0, 5);
 const player = new PhysicsCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
-
+//const controls = new OrbitControls( player.camera, renderer.domElement );
 
 // ------------------------------------------------------- build out the floor
 const ground = new Plane(0,0 , 0, 100, 100, -Math.PI/2, 0, 0, 0x555555, "textures/ground01.jpg");
 scene.add(ground.mesh);
 
 // ############################ THE TESTING ZONE #############################
+const pmremGenerator = new THREE.PMREMGenerator( renderer );
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const hdriLoader = new RGBELoader()
+hdriLoader.load( 'hdri/GaldoranSky.hdr', function ( texture ) {
+    scene.environment = texture;
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    scene.background = texture;
+} );
+
 
 
 const loader = new GLTFLoader();
