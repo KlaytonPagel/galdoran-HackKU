@@ -6,6 +6,7 @@ import { PlayerCharacter } from './characters/player';
 import { PhysicsCharacter } from './characters/physicsPlayer';
 import { Tree01 } from './objects/Tree01';
 import { PhysicsManager } from'./utility/PhysicsManager'
+import { SkyBox } from'./utility/SkyBox'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
@@ -39,13 +40,16 @@ scene.add( light );
 //const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
 //player.offset = new THREE.Vector3(1, 0, 5);
 const player = new PhysicsCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
-//const controls = new OrbitControls( player.camera, renderer.domElement );
 
 // ------------------------------------------------------- build out the floor
 const ground = new Plane(0,0 , 0, 100, 100, -Math.PI/2, 0, 0, 0x555555, "textures/ground01.jpg");
 scene.add(ground.mesh);
 
 // ############################ THE TESTING ZONE #############################
+
+//const controls = new OrbitControls( player.camera, renderer.domElement );
+
+// hdri test
 const pmremGenerator = new THREE.PMREMGenerator( renderer );
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
@@ -58,13 +62,16 @@ hdriLoader.load( 'hdri/GaldoranSky.hdr', function ( texture ) {
 } );
 
 
+//sky box test
+const sky = new SkyBox(scene)
 
+
+//terrain test
 async function loadTerrain() {
     try {
         const gltf = await new GLTFLoader().loadAsync('models/Terrain2.glb');
         const terrain = gltf.scene;
         scene.add(terrain);
-        console.log(terrain);
     } catch (error) {
         console.error("Error loading terrain:", error);
     }
@@ -123,7 +130,7 @@ function animate() {
 
 
 
-
+    sky.animate(delta);
 
 
 
