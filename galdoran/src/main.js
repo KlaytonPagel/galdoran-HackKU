@@ -46,12 +46,17 @@ scene.add(ground.mesh);
 // ############################ THE TESTING ZONE #############################
 
 
-const loader = new GLTFLoader();
-loader.load( 'models/Terrain2.glb', 
-    function ( gltf ) {
-        let model = gltf.scene;
-        scene.add(model);
-    });
+async function loadTerrain() {
+    try {
+        const gltf = await new GLTFLoader().loadAsync('models/Terrain2.glb');
+        const terrain = gltf.scene;
+        scene.add(terrain);
+        console.log(terrain);
+    } catch (error) {
+        console.error("Error loading terrain:", error);
+    }
+}
+loadTerrain();
 
 /*const fbxLoader = new FBXLoader()
 fbxLoader.load(
