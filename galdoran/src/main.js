@@ -92,7 +92,8 @@ async function loadTerrain() {
         });
         scene.add(terrain);
     } catch (error) {
-        console.error("Error loading terrain:", error);
+        console.error("Error loading terrain:", error, "trying again");
+        loadTerrain();
     }
 }
 loadTerrain();
