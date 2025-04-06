@@ -68,7 +68,7 @@ export class PlayerCharacter{
                 scene.add(model);
 
                 // create the "head" of the character, this helps with camera controls
-                const box = new THREE.Box3().setFromObject(model);
+                const box = new THREE.Box3().setFromObject(model.children[1]);
                 let size = new THREE.Vector3();
                 box.getSize(size)
                 const headGeo = new THREE.BoxGeometry(0, 0, 0);

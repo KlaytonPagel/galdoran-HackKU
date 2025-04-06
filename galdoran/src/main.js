@@ -37,7 +37,7 @@ const light = new THREE.HemisphereLight( 0xffffff, 0xffffff, 2 );
 scene.add( light );
 
 // ------------------------------------------------------- Player
-const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
+const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-character.fbx", scene, physicsManager);
 player.offset = new THREE.Vector3(1, 0, 5);
 //const player = new PhysicsCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager, renderer);
 
