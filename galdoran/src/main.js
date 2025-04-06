@@ -33,8 +33,8 @@ async function initPhysics() {
 }
 
 // -------------------------------------------------------- Lights
-const light = new THREE.HemisphereLight( 0xffffff, 0xffffff, 2 );
-scene.add( light );
+//const light = new THREE.HemisphereLight( 0xffffff, 0xffffff, 2 );
+//scene.add( light );
 
 // ------------------------------------------------------- Player
 const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-character.fbx", scene, physicsManager);
@@ -70,14 +70,14 @@ const ground = []
 //terrain test
 async function loadTerrain() {
     let texture = new THREE.TextureLoader().load('textures/T_GrassTerrain_01_01_C1.PNG');
-    texture.repeat = new THREE.Vector2(1, 1);
+    texture.repeat = new THREE.Vector2(.6, .6);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     let material = new THREE.MeshStandardMaterial({
         map: texture,
     });
     try {
-        const gltf = await new GLTFLoader().loadAsync('models/TreeTest.glb');
+        const gltf = await new GLTFLoader().loadAsync('models/GaldoranPort.glb');
         const terrain = gltf.scene;
         terrain.children[0].traverse((child) => {
             if (child.isMesh) {
@@ -136,7 +136,7 @@ function culling() {
     for (let i = 0; i < cullable.length; i++) {
         const pos = new THREE.Vector3()
         cullable[i].getWorldPosition(pos)
-        if (player.mesh.position.distanceTo(pos) > 200) {
+        if (player.mesh.position.distanceTo(pos) > 500) {
             cullable[i].visible = false
         } else {
             cullable[i].visible = true
