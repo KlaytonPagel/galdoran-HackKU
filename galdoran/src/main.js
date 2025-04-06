@@ -41,10 +41,9 @@ scene.add( amblight );
 
 const light = new THREE.DirectionalLight( 0xFFFFFF );
 scene.add( light );
-light.position.set(new THREE.Vector3(0, 1, 0));
-
-const helper = new THREE.DirectionalLightHelper( light, 5 );
-scene.add( helper );
+light.position.set(2, 10, 1);
+light.target.position.set(0, 0, 0);
+scene.add(light.target)
 
 // ------------------------------------------------------- Player
 const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-character.fbx", scene, physicsManager);
