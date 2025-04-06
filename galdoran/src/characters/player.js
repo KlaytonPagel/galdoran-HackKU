@@ -15,6 +15,7 @@ export class PlayerCharacter{
             y: roty, 
             z: rotz,
         }
+        this.ray  = new THREE.Raycaster();
         this.mesh;
         this.modelLocation = modelLocation;
         this.fspeed = 0;
@@ -67,7 +68,7 @@ export class PlayerCharacter{
                 scene.add(model);
 
                 // create the "head" of the character, this helps with camera controls
-                const box = new THREE.Box3().setFromObject(model);
+                const box = new THREE.Box3().setFromObject(model.children[1]);
                 let size = new THREE.Vector3();
                 box.getSize(size)
                 const headGeo = new THREE.BoxGeometry(0, 0, 0);
@@ -171,6 +172,17 @@ export class PlayerCharacter{
         this.camera.applyQuaternion(this.mesh.quaternion);
     }
 
+    checkGround(ground) {
+        const start = this.head.position.clone();
+        const dir = new THREE.Vector3(0, -1, 0);
+
+        this.ray.set(start, dir);
+        const intersects = this.ray.intersectObjects(ground);
+        if (intersects.length > 0) {
+            this.mesh.position.y = intersects[0].point.y;
+        }
+    }
+
     updateMovement(delta){
         // move the player forward
         this.playerControls.moveForward(this.fspeed*delta);
@@ -199,8 +211,9 @@ export class PlayerCharacter{
         this.camera.position.copy(this.head.position).add(worldOffset);
     }
 
-    update(delta){
+    update(delta, ground){
         this.updateMovement(delta);
         this.mixer.update(delta);
+        this.checkGround(ground);
     }
 }

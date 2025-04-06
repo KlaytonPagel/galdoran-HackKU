@@ -37,19 +37,19 @@ const light = new THREE.HemisphereLight( 0xffffff, 0xffffff, 2 );
 scene.add( light );
 
 // ------------------------------------------------------- Player
-//const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
-//player.offset = new THREE.Vector3(1, 0, 5);
-const player = new PhysicsCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager);
+const player = new PlayerCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-character.fbx", scene, physicsManager);
+player.offset = new THREE.Vector3(1, 0, 5);
+//const player = new PhysicsCharacter(0, 0, 0, 0, 0, 0, "models/galdoran-player.fbx", scene, physicsManager, renderer);
 
-// ------------------------------------------------------- build out the floor
-const ground = new Plane(0,0 , 0, 100, 100, -Math.PI/2, 0, 0, 0x555555, "textures/ground01.jpg");
-scene.add(ground.mesh);
+// ------------------------------------------------------ Loading Screen
+const loadingScreen = document.getElementById("loading-screen");
+
 
 // ############################ THE TESTING ZONE #############################
 
 //const controls = new OrbitControls( player.camera, renderer.domElement );
 
-// hdri test
+// hdri tes
 const pmremGenerator = new THREE.PMREMGenerator( renderer );
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
@@ -64,16 +64,36 @@ hdriLoader.load( 'hdri/GaldoranSky.hdr', function ( texture ) {
 
 //sky box test
 const sky = new SkyBox(scene)
-
+const cullable = []
+const ground = []
 
 //terrain test
 async function loadTerrain() {
+    let texture = new THREE.TextureLoader().load('textures/T_GrassTerrain_01_01_C1.PNG');
+    texture.repeat = new THREE.Vector2(1, 1);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    let material = new THREE.MeshStandardMaterial({
+        map: texture,
+    });
     try {
-        const gltf = await new GLTFLoader().loadAsync('models/Terrain2.glb');
+        const gltf = await new GLTFLoader().loadAsync('models/TreeTest.glb');
         const terrain = gltf.scene;
+        terrain.children[0].traverse((child) => {
+            if (child.isMesh) {
+                child.material = material;
+                ground.push(child);
+            }
+        });
+        terrain.children[1].traverse((child) => {
+            if (child.isMesh) {
+                cullable.push(child);
+            }
+        });
         scene.add(terrain);
     } catch (error) {
-        console.error("Error loading terrain:", error);
+        console.error("Error loading terrain:", error, "trying again");
+        loadTerrain();
     }
 }
 loadTerrain();
@@ -108,33 +128,50 @@ fbxLoader.load(
 
 
 
-physicsManager.createPlane(scene);
-physicsManager.createCube(scene);
+//physicsManager.createPlane(scene);
+//physicsManager.createCube(scene);
 
 // ###########################################################################
+function culling() {
+    for (let i = 0; i < cullable.length; i++) {
+        const pos = new THREE.Vector3()
+        cullable[i].getWorldPosition(pos)
+        if (player.mesh.position.distanceTo(pos) > 200) {
+            cullable[i].visible = false
+        } else {
+            cullable[i].visible = true
+        }
+    }
+}
 
 // -------------------------------------------------------- Animation Loop
 const clock = new THREE.Clock()
 let delta
 function animate() {
     delta = Math.min(clock.getDelta(), 0.1)
-    /*if (player.mesh != undefined){
+    if (player.mesh != undefined){
         if (player.playerControls == undefined) {
             player.initialize(renderer.domElement);
         }
-        player.update(delta);
-    }*/
+        player.update(delta, ground);
+        
+    }
     physicsManager.update(delta);
+    sky.animate(delta);
+    culling();
 
     // ############################ The Tesing Animation Zone #################
 
 
 
-    sky.animate(delta);
+    //player.update(delta);
 
 
 
 
     // ########################################################################
+    if (ground.length > 0 && loadingScreen.style.display != 'none') {
+        loadingScreen.style.display = 'none';
+    }
     renderer.render( scene, player.camera );
 }

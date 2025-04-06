@@ -6,10 +6,180 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Galdoran</title>
 	<style>
-		body { margin: 0; }
+	  body { margin: 0; }
+      body {
+        margin: 0;
+      }
+      
+      /* Set heading text information before it's animated. */
+      h1:before {
+        content: 'Loading';
+        font-size: 100%;
+        animation-name: loadScreenAnimation;
+        animation-duration: 3s;
+        animation-iteration-count: infinite;
+      }
+
+      /* Animate loading text. */
+      @keyframes loadScreenAnimation {
+        25% {content: "Loading."}
+        50% {content: "Loading.."}
+        75% {content: "Loading..."}
+        100% {content: "Loading"}
+      }
 	</style>
   </head>
   <body>
+      
+    <!-- inventory  -->
+    <div id="popup" 
+      style="
+        display: none; 
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        /* position: absolute;  */
+        background-color: white; 
+        border: 1px solid black; 
+        padding: 10px;
+        text-wrap-mode: wrap;">
+      <span id="popup-content" style="margin: 30px;"></span>
+
+      <div>
+        <button id="popup-close"
+        style="
+          background-color: #04AA6D;
+          border: none;
+          color: white;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          padding: 10px;
+          margin-top: 20px;
+          margin-bottom: 10px;
+        ">Close</button>
+      </div>
+      
+    </div>
+
+    <!-- dialogue text -->
+    <div id="dialogue-box" 
+      style="
+        display: none; 
+        position: absolute; 
+        background-color: white; 
+        border: 1px solid black; 
+        padding: 10px;
+        text-wrap-mode: wrap;">
+      <span id="dialogue-content" style="margin: 30px;"></span>
+
+      <div>
+        <button id="dialogue-close"
+        style="
+          background-color: #04AA6D;
+          border: none;
+          color: white;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          padding: 10px;
+          margin-top: 20px;
+          margin-bottom: 10px;
+        ">Close</button>
+      </div>
+      
+    </div>
+
+    <!-- interact button -->
+    <div id="dialogue-button" style="display: none; position: absolute;">
+      <button id="dialogue-open"
+      style="
+        background-color: #fff;
+        border: none;
+        color: black;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        padding: 10px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+      ">Talk</button>
+    </div>
+
+    <!-- cross hair -->
+    <div id="cross-hair" style="
+      display: true; 
+      position: fixed; 
+      height: 100%; 
+      left: 45%; 
+      top: 45%;
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      user-select: none;
+      ">
+      <img src="UI/crosshair_transparent.png" alt="crosshair" style="
+      width: 50%;
+      height: auto;
+      opacity: 0.5;"/>
+    </div>
+
+    <!-- health bar -->
+    <div id="health-bar" style="
+      display: true;
+      position: fixed;
+      font-family: 'Eagle Lake', serif;
+      font-weight: 400;
+      font-style: normal;
+      text-align: center;
+      margin-left: -100px;">
+      <p>Health</p>
+      <img src="UI/health_bar.png" alt="healthbar" style="
+      margin-top: -30px; 
+      width: 55%;
+      height: auto;"/>
+    </div>
+
+    <!-- stamina bar -->
+    <div id="stamina-bar" style="
+      display: true;
+      position: fixed;
+      font-family: 'Eagle Lake', serif;
+      font-weight: 400;
+      font-style: normal;
+      top: 15%;
+      text-align: center;
+      margin-top: -50px;
+      margin-left: -100px;">
+      <p>Stamina</p>
+      <img src="UI/stamina_bar.png" alt="healthbar" style="
+      margin-top: -30px;
+      width: 55%;
+      height: auto;"/>
+    </div>
+
+    <!-- loading screen -->
+    <div class="container" id="loading-screen" style="
+      display: true;
+      position: fixed;">
+      <img src="UI/parchmenttitlecard1.png" alt="loadingscreen" style="
+      width: 100%;
+      height: auto;"/>
+      <header style="
+      position: absolute;
+      top: 20%;
+      left: 53%;
+      font-family: 'Eagle Lake', serif;
+      font-weight: 400;
+      font-style: normal;
+      font-size: 20px;
+      transform: translate(-50%, -50%);">
+        <h1 class="headtext" id="text1"></h1>
+      </header>
+    </div>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
