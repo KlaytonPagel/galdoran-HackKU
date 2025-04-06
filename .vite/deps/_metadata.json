@@ -1,0 +1,43 @@
+{
+  "hash": "193cc9e1",
+  "configHash": "aa60eb60",
+  "lockfileHash": "8e26214c",
+  "browserHash": "a2b60c4f",
+  "optimized": {
+    "cannon-es": {
+      "src": "../../node_modules/cannon-es/dist/cannon-es.js",
+      "file": "cannon-es.js",
+      "fileHash": "eb96b1d1",
+      "needsInterop": false
+    },
+    "three": {
+      "src": "../../node_modules/three/build/three.module.js",
+      "file": "three.js",
+      "fileHash": "18c788c9",
+      "needsInterop": false
+    },
+    "three/addons/controls/PointerLockControls.js": {
+      "src": "../../node_modules/three/examples/jsm/controls/PointerLockControls.js",
+      "file": "three_addons_controls_PointerLockControls__js.js",
+      "fileHash": "cc043f3a",
+      "needsInterop": false
+    },
+    "three/addons/loaders/GLTFLoader.js": {
+      "src": "../../node_modules/three/examples/jsm/loaders/GLTFLoader.js",
+      "file": "three_addons_loaders_GLTFLoader__js.js",
+      "fileHash": "689c1e88",
+      "needsInterop": false
+    },
+    "three/examples/jsm/loaders/FBXLoader": {
+      "src": "../../node_modules/three/examples/jsm/loaders/FBXLoader.js",
+      "file": "three_examples_jsm_loaders_FBXLoader.js",
+      "fileHash": "e47a6d5e",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-FV24Y4CC": {
+      "file": "chunk-FV24Y4CC.js"
+    }
+  }
+}
