@@ -59,6 +59,7 @@ async function loadTerrain() {
         let allIndices = [];
         let vertexOffset = 0;
         const landscape = terrain.getObjectByName('Landscape');
+        
         console.log(landscape.position, landscape.scale, landscape.rotation);
         landscape.traverse(child => {
             // if (child.name == 'Landscape') {
@@ -111,6 +112,86 @@ function createSequentialIndices(positionArray) {
   }
 
 // ############################ THE TESTING ZONE #############################
+function loadHeightmapImage(src) {
+    return new Promise((resolve) => {
+      const texture = new THREE.TextureLoader().load(src, () => {
+        resolve(texture);
+      });
+    });
+  }
+  function getHeightDataFromTexture(texture, scale = 1) {
+    const width = texture.image.width;
+    const height = texture.image.height;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    
+    // 텍스처의 이미지를 canvas에 그리기
+    ctx.drawImage(texture.image, 0, 0);
+  
+    // canvas에서 픽셀 데이터 추출
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+  
+    const heights = [];
+    for (let y = 0; y < height; y++) {
+      const row = [];
+      for (let x = 0; x < width; x++) {
+        const i = (y * width + x) * 4;
+        const r = data[i];  // 그레이스케일 값은 r, g, b 값이 같으므로 r값만 사용
+        const heightValue = r * scale; // 높이값을 계산 (스케일값으로 높이 조정 가능)
+        row.push(heightValue);
+      }
+      heights.push(row);
+    }
+  
+    return heights;
+  }
+  function createTrimeshColliderFromHeightData(heights, scale = { x: 1, y: 1, z: 1 }) {
+    const width = heights[0].length;
+    const depth = heights.length;
+  
+    const vertices = [];
+    const indices = [];
+  
+    // 정점 생성
+    for (let z = 0; z < depth; z++) {
+      for (let x = 0; x < width; x++) {
+        vertices.push(
+          x * scale.x,
+          heights[z][x] * scale.y,
+          z * scale.z
+        );
+      }
+    }
+  
+    // 삼각형 인덱스 생성
+    for (let z = 0; z < depth - 1; z++) {
+      for (let x = 0; x < width - 1; x++) {
+        const i = z * width + x;
+        const iNextRow = (z + 1) * width + x;
+  
+        // 두 개의 삼각형으로 하나의 사각형 표현
+        indices.push(i, i + 1, iNextRow);
+        indices.push(iNextRow, i + 1, iNextRow + 1);
+      }
+    }
+  
+    // Rapier에 콜라이더 생성
+    const colliderDesc = RAPIER.ColliderDesc.trimesh(vertices, indices);
+    return colliderDesc;
+  }
+  async function setupTerrain() {
+    const texture = await loadHeightmapImage('./public/models/H_Combine_Out.png');  // heightmap 이미지 로드
+    const heightData = getHeightDataFromTexture(texture, 0.5); // 스케일값 0.5로 높이 데이터 추출
+  
+    const colliderDesc = createTrimeshColliderFromHeightData(heightData, { x: 1, y: 1, z: 1 });
+  
+    // Rapier 월드에 지형 추가
+    const ground = worldRap.createCollider(colliderDesc);
+  }
+
 
 function visualizeTrimesh(vertices, indices, color = 0xff0000, scale = 100) {
     const geometry = new THREE.BufferGeometry();
@@ -154,18 +235,6 @@ hdriLoader.load( 'hdri/GaldoranSky.hdr', function ( texture ) {
 //sky box test
 const sky = new SkyBox(scene)
 
-
-//terrain test
-async function loadTerrain() {
-    try {
-        const gltf = await new GLTFLoader().loadAsync('models/Terrain2.glb');
-        const terrain = gltf.scene;
-        scene.add(terrain);
-    } catch (error) {
-        console.error("Error loading terrain:", error);
-    }
-}
-loadTerrain();
 
 /*const fbxLoader = new FBXLoader()
 fbxLoader.load(
