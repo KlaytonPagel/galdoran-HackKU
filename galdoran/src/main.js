@@ -61,7 +61,7 @@ hdriLoader.load( 'hdri/GaldoranSky.hdr', function ( texture ) {
 //sky box test
 const sky = new SkyBox(scene)
 const cullable = []
-
+const ground = []
 
 //terrain test
 async function loadTerrain() {
@@ -78,6 +78,7 @@ async function loadTerrain() {
         terrain.children[0].traverse((child) => {
             if (child.isMesh) {
                 child.material = material;
+                ground.push(child);
             }
         });
         terrain.children[1].traverse((child) => {
@@ -122,15 +123,15 @@ fbxLoader.load(
 
 
 
-physicsManager.createPlane(scene);
-physicsManager.createCube(scene);
+//physicsManager.createPlane(scene);
+//physicsManager.createCube(scene);
 
 // ###########################################################################
 function culling() {
     for (let i = 0; i < cullable.length; i++) {
         const pos = new THREE.Vector3()
         cullable[i].getWorldPosition(pos)
-        if (player.mesh.position.distanceTo(pos) > 100) {
+        if (player.mesh.position.distanceTo(pos) > 200) {
             cullable[i].visible = false
         } else {
             cullable[i].visible = true
@@ -147,7 +148,8 @@ function animate() {
         if (player.playerControls == undefined) {
             player.initialize(renderer.domElement);
         }
-        player.update(delta);
+        player.update(delta, ground);
+        
     }
     physicsManager.update(delta);
     sky.animate(delta);
